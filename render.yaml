@@ -5,10 +5,9 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn fastapi_server:app --host 0.0.0.0 --port $PORT
+    startCommand: gunicorn fastapi_server:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.10.13
       - key: SECRET_KEY
         generateValue: true
 
@@ -20,7 +19,6 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run frontend/app.py --server.port $PORT --server.address 0.0.0.0
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.10.13
       - key: FASTAPI_URL
         value: https://smart-academic-fastapi.onrender.com
