@@ -16,21 +16,26 @@ class LLMService:
         self.gemini_available = False
         self.gemini_model = None
         
-        # Initialize Gemini AI
+      
         try:
             import google.generativeai as genai
             from app.config import Config
             
-            # FIXED: Use correct model name 'gemini-1.5-flash' (not gemini-2.5-flash)
-            if Config.GEMINI_API_KEY and Config.GEMINI_API_KEY != "AIzaSyCQHhodobMCacO3sIH37tpdvdC8CTprPVk ":
-                genai.configure(api_key=Config.GEMINI_API_KEY.strip())  # Added .strip() to remove spaces
-                self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')  # FIXED model name
+         
+            api_key = Config.GEMINI_API_KEY
+            
+          
+            if api_key and api_key.strip():
+                genai.configure(api_key=api_key.strip())
+                self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
                 self.gemini_available = True
+               
+                masked_key = api_key[:8] + "..." + api_key[-4:] if len(api_key) > 12 else "***"
                 print(f"✅ Gemini AI initialized with model: gemini-1.5-flash")
             else:
-                print("⚠️ No valid Gemini API key found - using ENHANCED fallback content")
+                print(" No valid Gemini API key found - using ENHANCED fallback content")
         except Exception as e:
-            print(f"⚠️ Gemini initialization error: {e} - using ENHANCED fallback content")
+            print(f" Gemini initialization error: {e} - using ENHANCED fallback content")
     
     def generate_study_content_with_ai(self, topic: str, level: str) -> Dict:
         """Generate COMPREHENSIVE study content with DETAILED abbreviations"""
@@ -41,7 +46,7 @@ class LLMService:
         try:
             print(f"🚀 Generating content for: {topic} at {level} level")
             
-            # IMPROVED PROMPT - Focuses heavily on abbreviations and detailed content
+          
             prompt = f"""You are an EXPERT EDUCATOR. Create a COMPREHENSIVE study guide about "{topic}" for {level} level students.
 
 CRITICAL REQUIREMENTS:
@@ -93,12 +98,12 @@ Generate the JSON now:"""
             response = self.gemini_model.generate_content(prompt)
             print(f"📝 Received response from Gemini ({len(response.text)} chars)")
             
-            # Parse the response
+         
             content = self._extract_json(response.text)
             
             if content and self._has_substance(content):
                 print(f"✅ Successfully generated detailed content for {topic}")
-                # Add a flag to indicate this is AI-generated
+              
                 content['_source'] = 'gemini_ai'
                 return content
             else:
@@ -242,12 +247,12 @@ Make it comprehensive and actionable for learners!"""
     def _extract_json(self, text: str) -> Optional[Dict]:
         """Extract JSON from response text"""
         try:
-            # Remove markdown code blocks
+
             text = re.sub(r'```json\s*', '', text)
             text = re.sub(r'```\s*', '', text)
             text = text.strip()
             
-            # Find JSON object
+      
             start = text.find('{')
             end = text.rfind('}') + 1
             
@@ -280,8 +285,7 @@ Make it comprehensive and actionable for learners!"""
             return False
         return True
     
-    # ============ FALLBACK CONTENT METHODS (keep all your existing fallback methods) ============
-    # ... (keep all your _get_advanced_fallback_content, _get_genai_fallback, etc. methods here)
+    
     
     def _get_advanced_fallback_content(self, topic: str, level: str) -> Dict:
         """Generate ADVANCED fallback content"""
@@ -569,7 +573,6 @@ For {level} learners, mastering {topic} requires understanding transformers, att
 """
         }
     
-    # Keep your existing fallback methods...
     def _get_python_fallback(self, topic: str, level: str) -> Dict:
         """Python specific fallback content"""
         return {
@@ -592,7 +595,7 @@ For {level} learners, mastering {topic} requires understanding transformers, att
                 "**Decorators**: Functions that modify other functions: `@timer def slow_function():` for logging, timing, access control."
             ],
             "detailed_notes": f"""
-## Python Study Notes
+## Python Study Notes for {level} Level
 
 ### Core Features
 - **Readable Syntax**: Clean, English-like code that's easy to learn and maintain
@@ -600,31 +603,33 @@ For {level} learners, mastering {topic} requires understanding transformers, att
 - **Dynamically Typed**: Flexible but requires testing to catch type errors
 - **Memory Managed**: Automatic garbage collection with reference counting
 
-### Popular Libraries
+### Popular Libraries by Domain
 - **Data Science**: NumPy, Pandas, Matplotlib, Scikit-learn
 - **Web Development**: Django, Flask, FastAPI
 - **AI/ML**: TensorFlow, PyTorch, Transformers
 - **Automation**: Requests, Selenium, BeautifulSoup
 
-### Best Practices
-- Follow PEP 8 style guide
-- Write docstrings for functions and classes
+### Best Practices for {level} Students
+- Follow PEP 8 style guide consistently
+- Write docstrings for all functions and classes
 - Use virtual environments for project isolation
 - Write unit tests with pytest or unittest
 - Use type hints (Python 3.6+) for better code clarity
+- Practice debugging with pdb or IDE debuggers
 """,
             "examples": [
-                "**Data Analysis**: Pandas DataFrame operations on CSV files",
-                "**Web API**: FastAPI endpoint returning JSON responses", 
-                "**Automation**: Selenium script for web scraping",
-                "**Machine Learning**: Scikit-learn model training pipeline"
+                "**Data Analysis**: Pandas DataFrame operations on CSV files - load, clean, transform, visualize",
+                "**Web API**: FastAPI endpoint returning JSON responses with automatic documentation",
+                "**Automation**: Selenium script for web scraping and automated testing",
+                "**Machine Learning**: Scikit-learn model training pipeline with cross-validation"
             ],
             "practice_questions": [
-                "Write a function that returns Fibonacci sequence up to n terms",
-                "Create a class for a Bank Account with deposit/withdraw methods",
-                "Use list comprehension to filter even numbers from a list"
+                "Write a function that returns Fibonacci sequence up to n terms using recursion and iteration",
+                "Create a class for a Bank Account with deposit/withdraw methods and transaction history",
+                "Use list comprehension to filter even numbers and double them from a list",
+                "Build a decorator that measures and prints function execution time"
             ],
-            "summary": "Python combines readability with power. Master dynamic typing, indentation, object model, comprehensions, and decorators. Practice with projects - automation, data analysis, or web apps."
+            "summary": "Python combines readability with power. Master dynamic typing, indentation, object model, comprehensions, and decorators. Practice with projects - automation, data analysis, or web apps. Focus on writing clean, documented, testable code."
         }
     
     def _get_ml_fallback(self, topic: str, level: str) -> Dict:
@@ -648,7 +653,7 @@ For {level} learners, mastering {topic} requires understanding transformers, att
                 "**Feature Engineering**: Transforming raw data into informative features - scaling, encoding, creating interactions."
             ],
             "detailed_notes": f"""
-## Machine Learning Study Notes
+## Machine Learning Study Notes for {level} Level
 
 ### The ML Pipeline
 1. **Data Collection**: Gather relevant, representative data
@@ -660,177 +665,241 @@ For {level} learners, mastering {topic} requires understanding transformers, att
 7. **Deployment**: Integrate model into production system
 8. **Monitoring**: Track performance, detect drift, retrain
 
-### Common Algorithms
+### Common Algorithms by Use Case
 - **Linear/Logistic Regression**: Baseline models for regression/classification
 - **Decision Trees/Random Forest**: Interpretable, handles non-linear relationships
 - **SVM**: Effective for high-dimensional spaces
-- **Neural Networks**: Deep learning for complex patterns
-- **K-Means**: Simple clustering algorithm
-- **PCA**: Dimensionality reduction
+- **Neural Networks**: Deep learning for complex patterns (images, text, audio)
+- **K-Means**: Simple clustering algorithm for customer segmentation
+- **PCA**: Dimensionality reduction for visualization and noise reduction
 
 ### Evaluation Metrics
 - **Classification**: Accuracy, Precision, Recall, F1-Score, ROC-AUC
 - **Regression**: MSE, MAE, R-squared, RMSE
-- **Clustering**: Silhouette score, inertia
+- **Clustering**: Silhouette score, inertia, Davies-Bouldin index
 """,
             "examples": [
-                "**Recommendation Systems**: Netflix suggesting movies based on viewing history",
-                "**Fraud Detection**: Credit card transactions flagged as suspicious",
-                "**Medical Diagnosis**: Identifying tumors in medical scans",
-                "**Autonomous Vehicles**: Self-driving cars perceiving environment"
+                "**Recommendation Systems**: Netflix suggesting movies based on viewing history and user similarities",
+                "**Fraud Detection**: Credit card transactions flagged as suspicious using anomaly detection",
+                "**Medical Diagnosis**: Identifying tumors in medical scans using CNN architectures",
+                "**Autonomous Vehicles**: Self-driving cars perceiving environment and making decisions"
             ],
             "practice_questions": [
-                "Explain the bias-variance tradeoff with examples",
-                "When would you use random forest vs logistic regression?",
-                "How do you handle imbalanced datasets in classification?"
+                "Explain the bias-variance tradeoff with concrete examples and visualizations",
+                "When would you use random forest vs logistic regression? Provide scenarios",
+                "How do you handle imbalanced datasets in classification problems?",
+                "Explain cross-validation and why it's better than a single train-test split"
             ],
-            "summary": "Machine Learning transforms data into predictions. Master supervised/unsupervised learning, train/test splits, cross-validation, bias-variance tradeoff, and feature engineering. Start with scikit-learn, progress to deep learning with TensorFlow/PyTorch."
+            "summary": "Machine Learning transforms data into predictions. Master supervised/unsupervised learning, train/test splits, cross-validation, bias-variance tradeoff, and feature engineering. Start with scikit-learn, progress to deep learning with TensorFlow/PyTorch. Always validate assumptions and test on unseen data."
         }
     
     def _get_generic_fallback(self, topic: str, level: str) -> Dict:
         """Generic fallback for any topic"""
         return {
-            "overview": f"## {topic}\n\n{topic} is a fundamental area of study combining theoretical knowledge with practical applications. This comprehensive guide covers foundations, core concepts, applications, and mastery strategies.\n\n### Why {topic} Matters\n\nMastering {topic} develops critical thinking, analytical skills, and problem-solving abilities that transfer across domains. Whether you're beginning your journey or seeking expertise, this foundation opens doors to numerous opportunities.",
+            "overview": f"""## {topic}\n\n{topic} is a fundamental area of study combining theoretical knowledge with practical applications. This comprehensive guide covers foundations, core concepts, applications, and mastery strategies tailored for {level} level learners.\n\n### Why {topic} Matters\n\nMastering {topic} develops critical thinking, analytical skills, and problem-solving abilities that transfer across domains. Whether you're beginning your journey or seeking expertise, this foundation opens doors to numerous opportunities in academics and careers.""",
             
             "abbreviations": f"""
-**Core Terms for {topic}**:
-- **Fundamental Concepts**: Essential vocabulary and building blocks
-- **Applied Methods**: How theories translate to practice  
-- **Advanced Terminology**: Specialized vocabulary for experts
+## Key Terminology for {topic}
+
+**Core Concepts**: Essential vocabulary and building blocks that form the foundation of {topic}. Understanding these terms is crucial for advanced study.
+
+**Applied Methods**: How theoretical principles translate to practical applications and real-world problem-solving.
+
+**Advanced Terminology**: Specialized vocabulary and concepts for experts looking to deepen their understanding.
 """,
             
             "key_concepts": [
-                f"**Foundational Principles of {topic}**: Understanding core theories establishes the basis for advanced study.",
-                f"**Practical Applications**: How {topic} applies to real-world problems across industries.",
-                f"**Methodologies**: Different approaches to analyze and solve problems in {topic}.",
-                f"**Tools and Techniques**: Essential resources and methods for working with {topic}.",
-                f"**Quality Metrics**: How to measure success and improve performance.",
-                f"**Advanced Topics**: Specialized areas for deeper expertise."
+                f"**Foundational Principles of {topic}**: Understanding core theories establishes the basis for advanced study. These principles apply across all subfields and applications.",
+                f"**Practical Applications**: How {topic} applies to real-world problems across industries including technology, healthcare, finance, and education.",
+                f"**Methodologies**: Different approaches to analyze and solve problems in {topic}, including quantitative, qualitative, and mixed methods.",
+                f"**Tools and Techniques**: Essential resources and methods for working with {topic}, from software tools to analytical frameworks.",
+                f"**Quality Metrics**: How to measure success, evaluate outcomes, and improve performance in {topic} applications.",
+                f"**Advanced Topics**: Specialized areas for deeper expertise including cutting-edge research and emerging trends."
             ],
             
             "detailed_notes": f"""
-## Study Notes for {topic}
+## Comprehensive Study Notes for {topic}
 
-### Section 1: Foundations
+### Section 1: Foundations (For {level} Level)
 
 Understanding {topic} begins with core principles that govern its operation. These foundations apply across all applications and expertise levels.
 
-**Historical Context**: The development of {topic} has been shaped by key discoveries, technological advances, and changing needs.
+**Historical Context**: The development of {topic} has been shaped by key discoveries, technological advances, and changing societal needs. Understanding this evolution provides context for current best practices.
 
-**Core Definitions**: Precise terminology enables clear communication and deep understanding.
+**Core Definitions**: Precise terminology enables clear communication and deep understanding. Master the vocabulary before moving to complex applications.
 
-### Section 2: How It Works
+**Theoretical Framework**: The underlying theories that explain why and how {topic} works. These theories have been validated through research and practice.
+
+### Section 2: How It Works - Step by Step
 
 The mechanisms behind {topic} involve interconnected processes:
-1. Assessment: Understanding requirements and constraints
-2. Planning: Developing systematic approach
-3. Implementation: Executing planned activities
-4. Evaluation: Measuring outcomes against objectives
-5. Iteration: Refining based on feedback
+1. **Assessment**: Understanding requirements, constraints, and success criteria
+2. **Planning**: Developing systematic approach with clear milestones
+3. **Implementation**: Executing planned activities with attention to quality
+4. **Evaluation**: Measuring outcomes against objectives and benchmarks
+5. **Iteration**: Refining based on feedback and lessons learned
 
-### Section 3: Best Practices
+### Section 3: Best Practices for Mastery
 
-- Start with fundamentals before advancing
-- Practice regularly with varied examples
-- Seek feedback and learn from mistakes
-- Connect new knowledge to existing understanding
-- Apply learning to real problems
-- Collaborate and discuss with peers
+- **Start with fundamentals** before advancing to complex topics
+- **Practice regularly** with varied examples and increasing difficulty
+- **Seek feedback** and learn from mistakes and misconceptions
+- **Connect new knowledge** to existing understanding and experiences
+- **Apply learning** to real problems and projects as soon as possible
+- **Collaborate and discuss** with peers to deepen understanding
+- **Teach others** - the best way to master any subject
+
+### Section 4: Common Challenges and Solutions
+
+**Challenge 1**: Information overload from too many resources
+*Solution*: Focus on one quality resource and master it before exploring others
+
+**Challenge 2**: Difficulty connecting theory to practice
+*Solution*: Start small projects immediately, even if imperfect
+
+**Challenge 3**: Plateaus in learning progress
+*Solution*: Change learning methods, seek mentorship, or take strategic breaks
+
+**Challenge 4**: Time management while learning
+*Solution*: Use structured schedules, Pomodoro technique, and set specific goals
 """,
             
             "examples": [
-                f"**Academic Application**: Student learning {topic} applies concepts to assignments and prepares for examinations.",
-                f"**Professional Scenario**: Professional uses {topic} knowledge to solve workplace challenges.",
-                f"**Research Context**: Researchers apply {topic} to discover new insights.",
-                f"**Personal Development**: Individual uses {topic} for self-improvement."
+                f"**Academic Application**: Student learning {topic} applies concepts to assignments, prepares for examinations, and builds foundational knowledge for advanced courses.",
+                f"**Professional Scenario**: Professional uses {topic} knowledge to solve workplace challenges, improve processes, and advance career opportunities.",
+                f"**Research Context**: Researchers apply {topic} to discover new insights, validate theories, and contribute to the field's knowledge base.",
+                f"**Personal Development**: Individual uses {topic} for self-improvement, hobby projects, and lifelong learning goals."
             ],
             
             "practice_questions": [
-                f"Explain the core principles of {topic} and why they matter.",
-                f"Describe a real-world situation where {topic} knowledge would be essential.",
-                f"Compare different approaches to mastering {topic}.",
-                f"How would you apply {topic} to solve a complex problem?",
-                f"Where is {topic} heading in the next 5-10 years?"
+                f"Explain the core principles of {topic} and why each matters for {level} level understanding.",
+                f"Describe a real-world situation where {topic} knowledge would be essential. What specific concepts would you apply?",
+                f"Compare different approaches to mastering {topic} at the {level} level. Which is most effective and why?",
+                f"How would you apply {topic} to solve a complex, multi-faceted problem in your field of interest?",
+                f"Where is {topic} heading in the next 5-10 years? What emerging trends should {level} learners prepare for?"
             ],
             
             "summary": f"""
 ## Key Takeaways for {topic}
 
-### Essential Points:
-- {topic} requires both theory and practice
-- Consistent deliberate practice leads to mastery
-- Real-world connection reinforces learning
-- Continuous learning is essential
+### 🎯 Essential Points for {level} Level:
+- {topic} requires both theoretical understanding AND practical application
+- Consistent deliberate practice leads to mastery, not just passive learning
+- Real-world connection reinforces and accelerates learning
+- Continuous learning and adaptation are essential as the field evolves
+- Collaboration and teaching others deepens your own understanding
 
-### Action Steps:
-1. Review core concepts daily
-2. Practice with real problems
-3. Seek feedback on understanding
-4. Apply knowledge to personal projects
+### 🚀 Action Steps for Immediate Progress:
+1. **Today**: Review core concepts and create summary notes
+2. **This Week**: Practice with 3-5 varied problems or projects
+3. **This Month**: Apply {topic} to a real personal or academic project
+4. **This Semester**: Seek feedback, iterate, and build portfolio pieces
 
-### Success Indicators:
-- Ability to explain concepts clearly
-- Confidence in applying knowledge
-- Problem-solving speed and accuracy
-- Recognition from peers and mentors
+### 📊 Success Indicators for {level} Learners:
+- Ability to explain concepts clearly to peers
+- Confidence in applying knowledge to new situations
+- Problem-solving speed and accuracy improvement over time
+- Recognition from teachers, peers, or mentors
+- Successful completion of projects and assessments
+
+### 📚 Next Learning Steps:
+1. Advanced topics within {topic}
+2. Related fields and interdisciplinary connections
+3. Practical certifications or project-based learning
+4. Mentorship and teaching opportunities
 """
         }
     
     def _get_advanced_fallback_quiz(self, topic: str, num_questions: int) -> Dict:
-        """Advanced fallback quiz"""
+        """Advanced fallback quiz with detailed questions"""
         return {
             "topic": topic,
             "questions": [
                 {
                     "question": f"What are the three most important foundational concepts in {topic} that beginners should master first? Explain why each matters.",
                     "options": [
-                        "Memorization, repetition, and testing",
+                        "Memorization, repetition, and testing without understanding",
                         f"Core principles, practical applications, and problem-solving frameworks specific to {topic}",
-                        "Speed, quantity, and competition",
-                        "Theory only, without practice"
+                        "Speed, quantity, and competition with others",
+                        "Theory only, completely without practice"
                     ],
                     "correct": 1,
-                    "explanation": f"Mastering {topic} requires understanding core principles (the 'what' and 'why'), practical applications (the 'how' and 'where'), and problem-solving frameworks (the structured approach to challenges). These three pillars support all advanced learning and real-world application."
+                    "explanation": f"Mastering {topic} requires understanding core principles (the 'what' and 'why' behind concepts), practical applications (the 'how' and 'where' to use knowledge), and problem-solving frameworks (structured approaches to challenges). These three pillars support all advanced learning and real-world application, forming the foundation for expertise."
                 },
                 {
-                    "question": f"Why is consistent practice essential for mastering {topic}?",
+                    "question": f"Why is consistent practice essential for mastering {topic} at any level?",
                     "options": [
-                        "It doesn't matter—talent is most important",
-                        "Practice builds muscle memory, reinforces neural pathways, and reveals gaps in understanding that passive learning misses",
-                        "Only reading is sufficient",
-                        "Practice is only for beginners"
+                        "It doesn't matter—natural talent is most important for success",
+                        "Practice builds muscle memory, reinforces neural pathways, and reveals gaps in understanding that passive learning misses completely",
+                        "Only reading and watching videos is sufficient for mastery",
+                        "Practice is only for beginners and becomes unnecessary at advanced levels"
                     ],
                     "correct": 1,
-                    "explanation": f"Neuroscience research shows that consistent practice strengthens neural connections (myelination), making recall and application faster and more automatic. Practice also reveals what you don't know—passive reading creates illusion of competence while practice exposes gaps. The '10,000 hour rule' (popularized by Gladwell, based on Ericsson's research) emphasizes deliberate practice, not just repetition."
+                    "explanation": f"Neuroscience research shows that consistent practice strengthens neural connections (myelination), making recall and application faster and more automatic. Practice also reveals what you don't know—passive reading creates illusion of competence while practice exposes genuine gaps. The '10,000 hour rule' emphasizes deliberate practice, not just repetition. Without practice, knowledge remains theoretical and unusable in real situations."
                 },
                 {
-                    "question": f"How does real-world application enhance learning of {topic}?",
+                    "question": f"How does real-world application enhance learning of {topic} compared to theoretical study alone?",
                     "options": [
-                        "It doesn't—abstract learning is better",
-                        "Application provides context, motivation, and feedback loops that accelerate understanding and retention",
-                        "Only theoretical knowledge matters",
-                        "Application is only for professionals"
+                        "It doesn't—abstract learning is always superior for understanding",
+                        "Application provides context, motivation, and feedback loops that accelerate understanding and retention dramatically",
+                        "Only theoretical knowledge matters for academic success",
+                        "Application is only for professionals and not relevant for students"
                     ],
                     "correct": 1,
-                    "explanation": f"Real-world application activates multiple learning pathways: contextual learning (understanding why something matters), motivated learning (solving actual problems is engaging), and feedback loops (results tell you if you're right). Research shows retention rates: lecture 5%, reading 10%, demonstration 30%, discussion 50%, practice by doing 75%, teaching others 90%."
+                    "explanation": f"Real-world application activates multiple learning pathways: contextual learning (understanding why something matters in actual situations), motivated learning (solving real problems is naturally engaging), and feedback loops (results tell you if you're applying correctly). Research shows retention rates: lecture 5%, reading 10%, demonstration 30%, discussion 50%, practice by doing 75%, teaching others 90%. Real application also reveals nuances and edge cases that theory often misses."
                 }
             ][:num_questions]
         }
     
     def _get_advanced_fallback_mindmap(self, topic: str) -> Dict:
-        """Advanced fallback mindmap"""
+        """Advanced fallback mindmap with structured learning path"""
         return {
             "topic": topic,
             "branches": [
-                {"name": "Foundations", "subtopics": ["Core definitions", "Historical context", "Key principles", "Essential terminology"]},
-                {"name": "How It Works", "subtopics": ["Step-by-step process", "Key components", "Common patterns", "Success metrics"]},
-                {"name": "Applications", "subtopics": ["Real-world use cases", "Industry examples", "Research applications", "Personal projects"]},
-                {"name": "Tools & Resources", "subtopics": ["Essential tools", "Learning platforms", "Practice exercises", "Community support"]},
-                {"name": "Mastery Path", "subtopics": ["Beginner steps", "Intermediate goals", "Advanced topics", "Expert resources"]}
-            ]
+                {"name": "Foundations & Core Concepts", "subtopics": [
+                    "Core definitions and scope of the field",
+                    "Historical development and key milestones",
+                    "Key principles and theoretical frameworks",
+                    "Essential terminology and vocabulary"
+                ]},
+                {"name": "How It Works - Deep Dive", "subtopics": [
+                    "Step-by-step processes and workflows",
+                    "Key components and their interactions",
+                    "Common patterns and best practices",
+                    "Success metrics and evaluation methods"
+                ]},
+                {"name": "Practical Applications", "subtopics": [
+                    "Real-world use cases across industries",
+                    "Industry-specific examples and case studies",
+                    "Research applications and academic uses",
+                    "Personal projects and hands-on learning"
+                ]},
+                {"name": "Tools & Learning Resources", "subtopics": [
+                    "Essential tools and software platforms",
+                    "Recommended learning platforms and courses",
+                    "Practice exercises and project ideas",
+                    "Community support and mentorship opportunities"
+                ]},
+                {"name": "Mastery Path & Career", "subtopics": [
+                    "Beginner → Intermediate → Advanced roadmap",
+                    "Certification options and recognized credentials",
+                    "Portfolio projects to demonstrate skills",
+                    "Career opportunities and job roles"
+                ]}
+            ],
+            "learning_path": {
+                "weeks_1_2": ["Complete foundational courses", "Master basic terminology", "Build first simple project"],
+                "weeks_3_4": ["Deep dive into core concepts", "Complete intermediate tutorials", "Start medium-complexity project"],
+                "weeks_5_6": ["Advanced topics exploration", "Build portfolio project", "Participate in community"],
+                "weeks_7_8": ["Mastery challenges", "Contribute to open source", "Prepare for certification/interviews"]
+            },
+            "resources": {
+                "beginner": ["Introductory courses and tutorials", "Beginner-friendly documentation", "Practice platforms for basics", "Community forums for questions"],
+                "intermediate": ["Advanced courses and workshops", "Technical blogs and research papers", "Project-based learning resources", "Mentorship programs"],
+                "advanced": ["Specialized training programs", "Conference talks and proceedings", "Expert communities and networking", "Research collaboration opportunities"]
+            }
         }
-    
-    # ============ ORIGINAL METHODS FOR COMPATIBILITY ============
+  
     
     def generate_response(self, query: str, role: str, context: Dict = None) -> str:
         """Generate response based on user role"""
@@ -858,32 +927,31 @@ The mechanisms behind {topic} involve interconnected processes:
         """Get personalized study recommendations"""
         base_recommendations = {
             "school": [
-                "Create a daily study schedule (2-3 hours)",
-                "Take notes during class and review them same day",
-                "Practice problems daily - start with 10 problems",
-                "Read actively: highlight, question, summarize",
-                "Form study groups to discuss concepts",
-                "Set weekly goals and track progress",
-                "Use the Pomodoro Technique: 25 min study, 5 min break"
+                "📚 Create a daily study schedule (2-3 hours focused work)",
+                "✏️ Take notes during class and review them the same day",
+                "🧮 Practice problems daily - start with 10 problems per topic",
+                "📖 Read actively: highlight, question, summarize each section",
+                "👥 Form study groups to discuss and explain concepts",
+                "🎯 Set weekly learning goals and track your progress",
+                "⏰ Use the Pomodoro Technique: 25 min study, 5 min break"
             ],
             "college": [
-                "Build a portfolio of 3-5 substantial projects",
-                "Practice technical interviews weekly",
-                "Network on LinkedIn and attend career fairs",
-                "Write blog posts explaining concepts you learn",
-                "Contribute to open source projects",
-                "Earn relevant certifications in your field",
-                "Participate in hackathons and competitions"
+                "🏗️ Build a portfolio of 3-5 substantial projects in your field",
+                "💼 Practice technical interviews weekly with peers",
+                "🌐 Network on LinkedIn and attend career fairs and workshops",
+                "📝 Write blog posts explaining concepts you learn (teaches deeply)",
+                "🤝 Contribute to open source projects relevant to your interests",
+                "📜 Earn relevant certifications in your field (AWS, Google, etc.)",
+                "🏆 Participate in hackathons and competitions for experience"
             ],
             "aspirant": [
-                "Create a 6-month study calendar with weekly targets",
-                "Take weekly mock tests under timed conditions",
-                "Analyze mistakes and maintain an error log",
-                "Focus 80% time on weak areas, 20% on strengths",
-                "Practice time management daily",
-                "Review using spaced repetition",
-                "Maintain health: sleep 7-8 hours, exercise, eat well"
+                "📅 Create a 6-month study calendar with weekly targets and milestones",
+                "📝 Take weekly mock tests under strict timed conditions",
+                "📊 Analyze mistakes and maintain a detailed error log",
+                "🎯 Focus 80% of time on weak areas, 20% on strengths",
+                "⏱️ Practice time management strategies daily",
+                "🔄 Review using spaced repetition systems (Anki, etc.)",
+                "💪 Maintain health: sleep 7-8 hours, exercise, eat well"
             ]
         }
         return base_recommendations.get(role, base_recommendations["college"])
- 

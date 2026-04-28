@@ -35,15 +35,14 @@ class Authentication:
     def register_user(self, username: str, password: str, email: str, role: str) -> Dict:
         """Register a new user"""
         users = self._load_users()
-        
-        # Check if username already exists
+     
         if username in users:
             return {"success": False, "message": "Username already exists"}
         
-        # Hash the password
+       
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
-        # Create user object
+      
         user = {
             "username": username,
             "password": hashed_password.decode('utf-8'),
@@ -67,9 +66,9 @@ class Authentication:
         
         user = users[username]
         
-        # Verify password
+   
         if bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            # Update last login
+        
             user['last_login'] = datetime.now().isoformat()
             users[username] = user
             self._save_users(users)

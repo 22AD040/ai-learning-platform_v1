@@ -1,40 +1,63 @@
+![GitHub stars](https://img.shields.io/github/stars/22AD040/smart-academic-assistant-pro?style=social)
+![GitHub forks](https://img.shields.io/github/forks/22AD040/smart-academic-assistant-pro?style=social)
+![GitHub repo size](https://img.shields.io/github/repo-size/22AD040/smart-academic-assistant-pro)
+
+---
+
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.28-red)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green)
+![Gemini](https://img.shields.io/badge/Gemini-AI-brightgreen)
+![Generative AI](https://img.shields.io/badge/Generative-AI-purple)
+![License](https://img.shields.io/badge/License-MIT-brightgreen)
+
+---
+
 # 🎓 Smart Academic Assistant Pro
 
-An intelligent, AI-powered learning platform for students of all levels - School, College, and Exam Aspirants.
+> 🧠 AI-Powered Academic Assistant with Study Materials, Quizzes, Assessment Tests, and Generative AI Content
 
-##  Features
+---
 
-### For School Students
--  Download study materials for different subjects
--  Interactive exam preparation schedule
--  Progress tracking dashboard
--  AI-powered content generation and quizzes
+## 🚀 Live Demo
 
-### For College Students
--  Placement preparation guides
--  Comprehensive subject-wise quizzes
--  Real-time project solutions
--  Performance analytics
+🌐 **Frontend (Streamlit App):**  
+👉 [https://smart-academic-assistant-pro.streamlit.app](https://smart-academic-assistant-pro.streamlit.app)
 
-### For Exam Aspirants
--  Detailed time management charts
--  Exam tips and strategies
--  Assessment tests with instant evaluation
--  Progress tracking
+⚙️ **Backend API (FastAPI - Render):**  
+👉 [https://smart-academic-assistant-pro.onrender.com](https://smart-academic-assistant-pro.onrender.com)
 
-### AI-Powered Features
--  Generate personalized study content
--  Create interactive mind maps
--  Custom quiz generation on any topic
-- Smart content recommendations
+📚 **API Documentation (Swagger UI):**  
+👉 [https://smart-academic-assistant-pro.onrender.com/docs](https://smart-academic-assistant-pro.onrender.com/docs)
 
-##  Installation
+---
 
-### Prerequisites
-- Python 3.8 or higher
-- pip package manager
+## 📚 API Documentation (FastAPI)
 
-### Step 1: Clone the Repository
-```bash
-git clone https://github.com/yourusername/smart-academic-assistant.git
-cd smart-academic-assistant
+Explore and test the backend API using FastAPI's interactive docs:
+
+👉 **Swagger UI:** https://smart-academic-assistant-pro.onrender.com/docs
+
+### 🔍 How to Use
+
+1. Open the Swagger UI link
+2. Browse available endpoints:
+   - `/api/auth/login` - User authentication
+   - `/api/content/generate` - Generate study content
+   - `/api/mindmap/generate` - Create learning mindmaps
+   - `/api/quiz/generate` - Generate custom quizzes
+   - `/api/quizzes/college` - Get college quizzes
+   - `/api/assessment-tests` - Get assessment tests
+   - `/api/placement-guides` - Get placement guides
+3. Click **"Try it out"**
+4. Enter request body
+5. Execute and see response
+
+### Example API Request
+
+```json
+{
+  "topic": "Artificial Intelligence",
+  "level": "Intermediate",
+  "role": "college"
+}

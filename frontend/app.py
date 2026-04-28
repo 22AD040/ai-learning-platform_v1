@@ -23,50 +23,148 @@ st.set_page_config(
 )
 
 def apply_background():
-    """Apply background image to all pages"""
+    """Apply background image - White text for sidebar, BLACK text for main content"""
     st.markdown("""
         <style>
-        /* Main app background */
+        /* Main app background - full screen */
         .stApp {
-            background-image: url("https://i.pinimg.com/736x/ae/26/1d/ae261d83c8c5f7c2a998c984784e4a73.jpg") !important;
+            background-image: url("https://i.pinimg.com/1200x/ef/3a/9a/ef3a9a53d8523aba97ed1777e4215029.jpg") !important;
             background-size: cover !important;
             background-position: center !important;
             background-repeat: no-repeat !important;
             background-attachment: fixed !important;
         }
         
-        /* Add white overlay for better text readability */
-        .stApp::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.88);
-            z-index: -1;
-            pointer-events: none;
+        /* Remove white overlay */
+        .stApp::before, .stApp::after {
+            display: none !important;
         }
         
-        /* Make main content area transparent */
+        /* Add dark overlay to main content area for readability */
         .stAppViewContainer {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Header transparent */
+        header[data-testid="stHeader"] {
+            background-color: transparent !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        
+        header[data-testid="stHeader"] > div {
             background-color: transparent !important;
         }
         
-        /* Keep sidebar readable */
-        [data-testid="stSidebar"] {
-            background-color: #000000 !important;  /* Black background */
+        .stApp header {
+            background-color: transparent !important;
         }
         
-        /* Make sidebar text white for readability */
-        [data-testid="stSidebar"] .stMarkdown,
-        [data-testid="stSidebar"] .stRadio label,
-        [data-testid="stSidebar"] .stSelectbox label,
-        [data-testid="stSidebar"] h1, 
-        [data-testid="stSidebar"] h2, 
-        [data-testid="stSidebar"] h3,
-        [data-testid="stSidebar"] p {
+        .st-emotion-cache-12fmjuu {
+            background-color: transparent !important;
+        }
+        
+        [class*="header"] {
+            background-color: transparent !important;
+        }
+        
+        /* Sidebar - dark semi-transparent */
+        [data-testid="stSidebar"] {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+            backdrop-filter: blur(8px) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* SIDEBAR TEXT - WHITE ONLY */
+        [data-testid="stSidebar"] * {
             color: white !important;
+        }
+        
+        /* MAIN CONTENT TEXT - BLACK/DARK */
+        .main * {
+            color: #1a1a1a !important;
+        }
+        
+        /* Headers in main content */
+        .main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
+            color: #0a0a0a !important;
+        }
+        
+        /* Paragraphs in main content */
+        .main p, .main span, .main div, .stMarkdown p {
+            color: #2a2a2a !important;
+        }
+        
+        /* Code blocks */
+        .stCodeBlock, .stCodeBlock * {
+            background-color: rgba(0, 0, 0, 0.8) !important;
+            color: #e0e0e0 !important;
+        }
+        
+        /* Buttons - keep visible */
+        button, .stButton button {
+            color: white !important;
+            background-color: rgba(0, 0, 0, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Info boxes - light background with dark text */
+        .stAlert, .stInfo, .stSuccess, .stWarning, .stError {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            color: #1a1a1a !important;
+        }
+        
+        .stAlert *, .stInfo *, .stSuccess *, .stWarning *, .stError * {
+            color: #1a1a1a !important;
+        }
+        
+        /* Input fields */
+        .stTextInput input, .stTextArea textarea {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            color: #1a1a1a !important;
+            border: 1px solid rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .stTextInput label, .stTextArea label {
+            color: #1a1a1a !important;
+        }
+        
+        /* Select boxes */
+        .stSelectbox div[data-baseweb="select"] {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            color: #1a1a1a !important;
+        }
+        
+        /* Radio buttons in main content */
+        .stRadio label {
+            color: #1a1a1a !important;
+        }
+        
+        /* Tabs */
+        .stTabs [data-baseweb="tab-list"] button {
+            color: #1a1a1a !important;
+            background-color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        /* Metric cards */
+        [data-testid="stMetric"] label, [data-testid="stMetric"] div {
+            color: #1a1a1a !important;
+        }
+        
+        /* Expander headers */
+        [data-testid="stExpander"] summary p {
+            color: #1a1a1a !important;
+        }
+        
+        /* Download buttons */
+        .stDownloadButton button {
+            background-color: rgba(0, 0, 0, 0.7) !important;
+            color: white !important;
+        }
+        
+        /* Links */
+        a {
+            color: #0066cc !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -114,7 +212,6 @@ def init_session_state():
     if 'test_answers_store' not in st.session_state:
         st.session_state.test_answers_store = {}
 
-# ============ FIXED QUIZ FUNCTION - COLLEGE DASHBOARD ============
 
 def display_quiz(quiz):
     """Display and evaluate a quiz - WITHOUT ST.RERUN()"""
@@ -284,7 +381,7 @@ def display_quiz(quiz):
             if quiz_key in st.session_state.quiz_answers_store:
                 del st.session_state.quiz_answers_store[quiz_key]
             st.rerun()
-# ============ FIXED ASSESSMENT TEST FUNCTION - EXAM DASHBOARD ============
+
 def display_assessment_test(test):
     """Display and evaluate assessment test - SIMPLE WORKING VERSION"""
     st.subheader(f"📝 {test['name']}")
@@ -359,7 +456,7 @@ def display_assessment_test(test):
                     st.rerun()
         else:
             st.warning(f"⚠️ Please answer all {len(test['questions'])} questions before submitting.")
-# ============ AI QUIZ GENERATOR WITH UNIQUE QUESTIONS ============
+
 def generate_unique_quiz(topic, num_questions=10):
     """Generate unique quiz questions based on topic"""
     
@@ -627,7 +724,6 @@ def display_ai_quiz_generator():
             else:
                 st.warning("Please enter a quiz topic")
 
-# ============ LOGIN PAGE ============
 def login_page():
     """Display login page"""
     st.markdown("""
@@ -703,27 +799,27 @@ def login_page():
                 st.session_state.show_register = False
                 st.rerun()
 
-# ============ AI CONTENT GENERATOR ============
+
 def display_ai_content_generator(role_key):
-    """AI Content Generator with role-specific storage"""
+    """AI Content Generator with role-specific storage - UPDATED to show all fields"""
     st.markdown("""
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
         <h3 style="color: white;">🤖 AI-Powered Study Assistant</h3>
-        <p style="color: white;">Generate personalized study content with rich formatting!</p>
+        <p style="color: white;">Get comprehensive explanations with key observations for any topic!</p>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
     with col1:
-        topic = st.text_input("📚 Enter topic:", placeholder="e.g., Pythagorean Theorem, Photosynthesis, Python Loops", key=f"content_topic_{role_key}")
-        level = st.selectbox("📊 Difficulty:", ["Beginner", "Intermediate", "Advanced"], key=f"content_level_{role_key}")
+        topic = st.text_input("📚 Enter topic:", placeholder="e.g., AI, Python, ML, API, Cloud Computing", key=f"content_topic_{role_key}")
+        level = st.selectbox("📊 Difficulty Level:", ["Beginner", "Intermediate", "Advanced"], key=f"content_level_{role_key}")
         
         if st.button("✨ Generate Study Content", use_container_width=True, type="primary", key=f"gen_content_btn_{role_key}"):
             if topic:
-                with st.spinner(f"AI is creating comprehensive content for '{topic}'..."):
+                with st.spinner(f"Generating comprehensive content for '{topic}'..."):
                     content = api.generate_content_with_gemini(topic, level)
-                    if content and not content.get("error"):
+                    if content:
                         st.session_state[f'ai_content_{role_key}'] = content
                         st.success("✅ Content generated successfully!")
                     else:
@@ -732,9 +828,19 @@ def display_ai_content_generator(role_key):
                 st.warning("Please enter a topic")
     
     with col2:
-        if st.button("🧠 Generate Interactive Mindmap", use_container_width=True, key=f"gen_mindmap_btn_{role_key}"):
+        st.markdown("### 💡 What you'll get:")
+        st.markdown("""
+        - 📖 **Full Form** (for abbreviations)
+        - 📚 **Detailed Overview**
+        - 🔬 **In-depth Explanation**
+        - 👁️ **Key Observations** (NEW!)
+        - 💼 **Real-world Applications**
+        - 📌 **Summary**
+        """)
+        
+        if st.button("🧠 Generate Mindmap", use_container_width=True, key=f"gen_mindmap_btn_{role_key}"):
             if topic:
-                with st.spinner(f"Creating interactive roadmap for '{topic}'..."):
+                with st.spinner(f"Creating roadmap for '{topic}'..."):
                     mindmap = api.generate_mindmap_with_gemini(topic)
                     if mindmap:
                         st.session_state[f'ai_mindmap_{role_key}'] = mindmap
@@ -742,49 +848,71 @@ def display_ai_content_generator(role_key):
             else:
                 st.warning("Please enter a topic first")
     
-  
+    
     ai_content = st.session_state.get(f'ai_content_{role_key}')
     if ai_content:
         st.markdown("---")
         st.markdown("## 📖 Generated Study Material")
         
-        st.markdown("### 📌 Overview")
-        st.info(ai_content.get('overview', 'No overview available'), icon="💡")
+      
+        if ai_content.get('full_form') and ai_content.get('full_form') != "N/A":
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; color: white;">
+                <b>🔤 Full Form:</b> {ai_content['full_form']}
+            </div>
+            """, unsafe_allow_html=True)
         
-        st.markdown("### 🔑 Key Concepts")
-        key_concepts = ai_content.get('key_concepts', [])
-        if key_concepts:
-            cols = st.columns(2)
-            for idx, concept in enumerate(key_concepts):
-                with cols[idx % 2]:
+       
+        st.markdown("### 📌 Overview")
+        st.markdown(f'<div style="background-color: #f0f7ff; padding: 1.2rem; border-radius: 12px; color: #000000; line-height: 1.6;">{ai_content.get("overview", "No overview available")}</div>', unsafe_allow_html=True)
+   
+        st.markdown("### 📚 Detailed Explanation")
+        st.markdown(f'<div style="background-color: #f8f9fa; padding: 1.2rem; border-radius: 12px; color: #000000; line-height: 1.6;">{ai_content.get("detailed_explanation", ai_content.get("detailed_notes", "No detailed explanation available"))}</div>', unsafe_allow_html=True)
+        
+        
+        st.markdown("### 👁️ Key Observations & Insights")
+        key_observations = ai_content.get('key_observations', [])
+        if key_observations:
+            if isinstance(key_observations, list):
+                for obs in key_observations:
                     st.markdown(f"""
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1rem; border-radius: 10px; margin-bottom: 0.5rem; color: #FFFFFF;">
-                        {concept}
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.8rem; border-radius: 10px; margin-bottom: 0.7rem; color: white;">
+                        💡 {obs}
                     </div>
                     """, unsafe_allow_html=True)
+            else:
+               
+                obs_text = str(key_observations)
+                import re
+                observations = re.split(r'\n|•|\*|\d+\.', obs_text)
+                for obs in observations:
+                    if obs.strip():
+                        st.markdown(f"""
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.8rem; border-radius: 10px; margin-bottom: 0.7rem; color: white;">
+                            💡 {obs.strip()}
+                        </div>
+                        """, unsafe_allow_html=True)
+        else:
+            st.info("No specific observations available for this topic.")
+ 
+        st.markdown("### 💼 Real-World Applications")
+        applications = ai_content.get('applications', 'No applications described')
+        st.markdown(f'<div style="background-color: #e8f4f8; padding: 1.2rem; border-radius: 12px; color: #000000; line-height: 1.6;">{applications}</div>', unsafe_allow_html=True)
         
-        st.markdown("### 📝 Detailed Notes")
-        detailed_notes = ai_content.get('detailed_notes', 'No detailed notes')
-        st.markdown(f'<div style="background-color: #f8f9fa; padding: 1rem; border-radius: 10px; color: #000000;">{detailed_notes}</div>', unsafe_allow_html=True)
-        
-        st.markdown("### 💡 Examples")
-        for ex in ai_content.get('examples', []):
-            st.markdown(f"""
-            <div style="background-color: #e8f4f8; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 4px solid #667eea; color: #000000;">
-                {ex}
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("### ✍️ Practice Questions")
-        for q in ai_content.get('practice_questions', []):
-            st.markdown(f"""
-            <div style="background-color: #f0f8f0; padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; color: #000000;">
-                {q}
-            </div>
-            """, unsafe_allow_html=True)
-        
+  
         st.markdown("### 📌 Summary")
-        st.success(ai_content.get('summary', 'No summary'), icon="🎯")
+        st.markdown(f'<div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 1.2rem; border-radius: 12px; color: white; line-height: 1.6;">{ai_content.get("summary", "No summary available")}</div>', unsafe_allow_html=True)
+        
+      
+        examples = ai_content.get('examples', [])
+        if examples:
+            st.markdown("### 💡 Examples")
+            for ex in examples:
+                st.markdown(f"""
+                <div style="background-color: #f0f8f0; padding: 0.8rem; border-radius: 10px; margin-bottom: 0.5rem; border-left: 4px solid #11998e; color: #000000;">
+                    {ex}
+                </div>
+                """, unsafe_allow_html=True)
     
   
     ai_mindmap = st.session_state.get(f'ai_mindmap_{role_key}')
@@ -812,7 +940,7 @@ def add_ai_logo_to_sidebar():
     """, unsafe_allow_html=True)
     st.sidebar.markdown("---")
 
-# ============ COMPREHENSIVE COLLEGE QUIZZES ============
+
 def get_comprehensive_college_quizzes():
     """Return comprehensive college quizzes with complete answers"""
     return [
@@ -873,7 +1001,7 @@ def get_comprehensive_college_quizzes():
         }
     ]
 
-# ============ SCHOOL STUDENT DASHBOARD ============
+
 def school_student_dashboard():
     """Dashboard for school students"""
     add_ai_logo_to_sidebar()
@@ -1103,7 +1231,6 @@ def school_student_dashboard():
             display_ai_quiz_generator()
 
 
-# ============ COLLEGE STUDENT DASHBOARD ============
 def college_student_dashboard():
     """Dashboard for college students"""
     add_ai_logo_to_sidebar()
@@ -1245,7 +1372,6 @@ def college_student_dashboard():
         with tab2:
             display_ai_quiz_generator()
 
-# ============ EXAM ASPIRANT DASHBOARD ============
 def exam_aspirant_dashboard():
     """Dashboard for exam aspirants"""
     add_ai_logo_to_sidebar()
@@ -1456,7 +1582,7 @@ def exam_aspirant_dashboard():
             st.markdown("---")
             display_assessment_test(st.session_state.current_test)
             if st.button("← Back to Tests", use_container_width=True):
-                # Clear test answers
+             
                 for key in list(st.session_state.test_answers_store.keys()):
                     if key.startswith("test_"):
                         del st.session_state.test_answers_store[key]
@@ -1558,7 +1684,7 @@ def exam_aspirant_dashboard():
             display_ai_quiz_generator()
 
 
-# ============ MAIN APP ============
+
 def main_app():
     """Main application router"""
     apply_background()  

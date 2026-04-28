@@ -14,11 +14,11 @@ class API:
     """API routes for handling data operations"""
     
     def __init__(self):
-        # Initialize gemini attributes FIRST
+   
         self.gemini_available = False
         self.gemini_model = None
         
-        # Then proceed with other initialization
+       
         self.chats_file = Config.CHATS_FILE
         self._ensure_chats_file()
         self._ensure_pdf_directory()
@@ -110,7 +110,7 @@ class API:
         doc.build(story)
         return pdf_path
     
-    # School Student Resources - COMPLETE STUDY MATERIALS FOR ALL SUBJECTS
+    
     def get_school_study_materials(self, subject):
         """Get study materials for school students with real PDFs for ALL subjects"""
         materials_content = {
@@ -386,7 +386,7 @@ class API:
             }
         }
     
-    # College Student Resources
+
     def get_placement_guides(self):
         """Get placement preparation guides with real PDFs"""
         guides_content = {
@@ -496,7 +496,7 @@ class API:
             }
         }
         
-        # Generate PDFs for each guide
+       
         pdf_guides = {}
         for guide_name, content in guides_content.items():
             filename = f"Placement_Guide_{guide_name}_{datetime.now().strftime('%Y%m%d')}.pdf"
@@ -661,7 +661,7 @@ class API:
             }
         ]
     
-    # Exam Aspirant Resources - WITH WORKING ASSESSMENT TESTS
+   
     def get_subject_time_charts(self):
         """Get time chart guidance for each subject"""
         return {
@@ -895,7 +895,7 @@ class API:
             'test_name': test['name']
         }
     
-    # ============ GEMINI AI POWERED METHODS WITH ELABORATE CONTENT ============
+    
     
     def _init_gemini(self):
         """Initialize Gemini AI if available"""
@@ -923,9 +923,9 @@ class API:
         if not hasattr(self, 'gemini_available') or self.gemini_model is None:
             self._init_gemini()
         
-        # Always use elaborate static content for now (until Gemini works)
-        # This ensures you get RICH, PARAGRAPH-STYLE content for ANY topic
+     
         return self._get_elaborate_static_content(topic, level)
+    
     
     def _get_elaborate_static_content(self, topic: str, level: str) -> Dict:
         """ELABORATE PARAGRAPH-STYLE CONTENT for ANY topic at ANY level"""
@@ -933,7 +933,7 @@ class API:
         topic_capitalized = topic.title()
         level_lower = level.lower()
         
-        # ============ BEGINNER LEVEL - ELABORATE ============
+     
         if level_lower == "beginner":
             return {
                 "overview": f"""## 🌟 Welcome to {topic_capitalized}! A Friendly Introduction
@@ -1029,7 +1029,7 @@ The single most important factor in learning {topic_capitalized} isn't innate in
 **Your Next Step:** Choose one small action to take today - read an article, watch a video, explain {topic_capitalized} to someone, or try a simple practice exercise. That single step starts your journey toward understanding and mastery! 🌟"""
             }
         
-        # ============ INTERMEDIATE LEVEL - ELABORATE ============
+      
         elif level_lower == "intermediate":
             return {
                 "overview": f"""## 📊 Understanding {topic_capitalized} at an Intermediate Level
@@ -1162,8 +1162,8 @@ As you advance in {topic_capitalized}, you'll encounter new types of challenges:
 **Your Next Step:** Apply your intermediate {topic_capitalized} knowledge to a real project. Choose a problem that matters to you - at work, in your community, or for personal interest. Document your process, measure your results, and reflect on what you learn. Nothing builds skill like practical application!"""
             }
         
-        # ============ ADVANCED LEVEL - ELABORATE ============
-        else:  # advanced
+     
+        else:  
             return {
                 "overview": f"""## 🎓 Advanced {topic_capitalized}: Deep Expertise and Innovation
 
@@ -1456,7 +1456,7 @@ Provide a helpful, accurate, and concise response. Be supportive and educational
             print(f"Chat error: {e}")
             return f"I'm here to help with your studies! What would you like to know about?"
     
-    # ============ FALLBACK METHODS ============
+  
     
     def _get_fallback_content(self, topic: str, level: str) -> Dict:
         """Fallback content - redirects to elaborate static content"""
@@ -1482,6 +1482,7 @@ Provide a helpful, accurate, and concise response. Be supportive and educational
         """Dynamic content redirect"""
         return self._get_elaborate_static_content(topic, level)
     
+    
     def _get_fallback_mindmap(self, topic: str) -> Dict:
         """Fallback mindmap when AI is unavailable"""
         return {
@@ -1505,3 +1506,4 @@ Provide a helpful, accurate, and concise response. Be supportive and educational
                 "explanation": f"All of these concepts are important when studying {topic}."
             })
         return {"topic": topic, "questions": questions}
+    
